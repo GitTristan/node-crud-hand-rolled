@@ -18,24 +18,54 @@ var handleRequest = function(req, res) {
     res.end();
   }
 
-  if (req.url == '/cars') {
+  if (req.url == '/cars' && req.method == "GET") {
     // Synchronously load the index jade template (http://jade-lang.com/)
     var index = fs.readFileSync('index.jade', 'utf8');
     // Compile template
-    compiledIndex = jade.compile(index, { pretty: true, filename: 'index.jade' });
+    var compiledIndex = jade.compile(index, { pretty: true, filename: 'index.jade' });
+
+    Car.find({}, function(err, cars){
+      console.log(cars);
+      var rendered = compiledIndex({cars: cars});
+      res.end(rendered)
+    })
 
     // example of data that can be passed in to the Jade template:
     // in your CRUD app, a call to Mongoose should return all of the Cars
     var sampleDataForCars = { cars: [
       { driver: 'Andreas', make: 'Nissan', model: 'Xterra', year: 2005 },
       { driver: 'Bob Ross', make: 'Ford', model: 'Pinto', year: 1972 }
-    ]};
+    ],
+    headline: "Welcome to the Cars CRUD App!"
+  };
 
     // Render jade template, passing in the info
-    var rendered = compiledIndex(sampleDataForCars);
 
     // Write rendered contents to response stream
-    res.end(rendered);
+  } else if (req.url == "/cars/new") {
+    var newTemplate = fs.readFileSync('new.jade', 'utf8');
+    compilednewTemplate = jade.compile(newTemplate, { pretty: true, filename: 'new.jade' });
+
+    res.end(compilednewTemplate());
+  } else if (req.url == '/cars' && req.method == "POST") {
+    var postParams = {}
+    req.on('data', function(data) {
+      data = data.toString();
+      data = data.split('&');
+      for (var i=0; i < data.length; i++) {
+        var _data = data[i].split("=");
+        postParams[_data[0]] = _data[1];
+      }
+      var car = new Car(postParams);
+      car.save(function (err) {
+        if (err)
+          console.log(err);
+      });
+
+      res.writeHead(301, {location: 'http://localhost:1337/cars'});
+      res.end();
+    });
+
   } else {
     // Your code might go here (or it might not)
     res.writeHead(200);

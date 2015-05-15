@@ -2,9 +2,9 @@ doctype html
 html(lang="en")
   body
     h1 Welcome to the Cars CRUD App!
-    
+
     h4 Here is a listing of the current cars we have:
-    
+
     ul
       for car in cars
         li= car.driver + ' in a ' + car.year + ' ' + car.make + ' ' + car.model
