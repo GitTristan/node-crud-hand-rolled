@@ -32,12 +32,12 @@ var handleRequest = function(req, res) {
 
     // example of data that can be passed in to the Jade template:
     // in your CRUD app, a call to Mongoose should return all of the Cars
-    var sampleDataForCars = { cars: [
-      { driver: 'Andreas', make: 'Nissan', model: 'Xterra', year: 2005 },
-      { driver: 'Bob Ross', make: 'Ford', model: 'Pinto', year: 1972 }
-    ],
-    headline: "Welcome to the Cars CRUD App!"
-  };
+  //   var sampleDataForCars = { cars: [
+  //     { driver: 'Andreas', make: 'Nissan', model: 'Xterra', year: 2005 },
+  //     { driver: 'Bob Ross', make: 'Ford', model: 'Pinto', year: 1972 }
+  //   ],
+  //   headline: "Welcome to the Cars CRUD App!"
+  // };
 
     // Render jade template, passing in the info
 
@@ -48,6 +48,25 @@ var handleRequest = function(req, res) {
 
     res.end(compilednewTemplate());
   } else if (req.url == '/cars' && req.method == "POST") {
+    var postParams = {}
+    req.on('data', function(data) {
+      data = data.toString();
+      data = data.split('&');
+      for (var i=0; i < data.length; i++) {
+        var _data = data[i].split("=");
+        postParams[_data[0]] = _data[1];
+      }
+      var car = new Car(postParams);
+      car.save(function (err) {
+        if (err)
+          console.log(err);
+      });
+
+      res.writeHead(301, {location: 'http://localhost:1337/cars'});
+      res.end();
+    });
+
+  } else if (req.url == '/cars/<something id/show' && req.method == "GET") {
     var postParams = {}
     req.on('data', function(data) {
       data = data.toString();
