@@ -1,16 +1,16 @@
 doctype html
 html(lang="en")
   body
-    h1 New Car
+    h1 New Car, yo
 
     div.loginbox
       form(name="cars", action="/cars", method="post")
-        | Name:
+        label(for="driver") Driver
         input(type="text", name="driver")
-        | Make:
+        label(for="make") Make
         input(type="text", name="make")
-        | Model:
+        label(for="model") Model
         input(type="text", name="model")
-        | Year:
+        label(for="year") Year
         input(type="number", name="year")
         input(type="submit", value="Create Car - I am Batman")
